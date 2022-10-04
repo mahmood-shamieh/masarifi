@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       bool? isLightMode = GetStorage().read<bool>("lightMode");
       if (isLightMode == null) {
         return ThemeMode.system;
-      } else if (isLightMode!) {
+      } else if (isLightMode) {
         return ThemeMode.light;
       } else {
         return ThemeMode.dark;
