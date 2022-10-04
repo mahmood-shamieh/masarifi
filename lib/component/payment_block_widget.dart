@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
+import 'package:masarifi/component/delete_payment_dialog.dart';
 import 'package:masarifi/component/edit_payment_dialog.dart';
 import 'package:masarifi/constants.dart';
 import 'package:masarifi/controllers/View_controllers/main_page_controller.dart';
@@ -33,18 +34,43 @@ class PaymentBlockWidget extends GetView<MainPageController> {
             ),
           ),
           leading: Icon(Icons.payment),
-          trailing: IconButton(
-            onPressed: () => Get.defaultDialog(
-                title: "تعديل",
-                titleStyle: getTextStyle(
-                  size: 20,
-                  color: Get.theme.primaryColor,
-                  fontWeight: FontWeight.bold,
+          trailing: SizedBox(
+            width: MediaQuery.of(context).size.width / 4,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () => Get.defaultDialog(
+                      title: "تعديل",
+                      titleStyle: getTextStyle(
+                        size: 20,
+                        color: Get.theme.primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      content: EditPaymentDialog(
+                        paymentModel: paymentModel,
+                      )),
+                  icon: Icon(Icons.edit),
                 ),
-                content: EditPaymentDialog(
-                  paymentModel: paymentModel,
-                )),
-            icon: Icon(Icons.edit),
+                IconButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.red[500])),
+                  onPressed: () => Get.defaultDialog(
+                    title: "تنبيه الحذف",
+                    titleStyle: getTextStyle(
+                      size: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Get.theme.primaryColor,
+                    ),
+                    content: DeletePaymentDialog(paymentModel: paymentModel),
+                  ),
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.redAccent[700],
+                  ),
+                )
+              ],
+            ),
           ),
           title: RichText(
             text: TextSpan(

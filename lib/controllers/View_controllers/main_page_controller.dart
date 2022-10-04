@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:masarifi/models/db_models/category_model.dart';
 import 'package:masarifi/models/db_models/payment_model.dart';
 import 'package:masarifi/models/db_models/record_model.dart';
 import 'package:masarifi/pages.dart';
 import 'package:masarifi/requests/category_requests/add_category_request.dart';
+import 'package:masarifi/requests/category_requests/delete_category_request.dart';
 import 'package:masarifi/requests/category_requests/read_category_request.dart';
 import 'package:masarifi/requests/category_requests/update_category_request.dart';
 import 'package:masarifi/requests/payment_requests/add_payment_request.dart';
+import 'package:masarifi/requests/payment_requests/delete_payment_request.dart';
 import 'package:masarifi/requests/payment_requests/read_payment_request.dart';
 import 'package:masarifi/requests/payment_requests/update_payment_request.dart';
 import 'package:masarifi/requests/public_database_requests/create_record_request.dart';
@@ -19,7 +23,10 @@ class MainPageController extends GetxController {
   Rx<Pages> currentPage = Pages.homePage.obs;
   RecordModel? todayRecord;
   Rxn<List<CategoryModel>> categories = Rxn<List<CategoryModel>>();
-  Rxn<List<PaymentModel>> todayPayment = Rxn<List<PaymentModel>>();
+  Rxn<List<PaymentModel>> viewTodayPayment = Rxn<List<PaymentModel>>();
+  List<PaymentModel> todayPayment = [];
+  Rx<bool> isDarkMode = Rx<bool>(GetStorage().read<bool>("lightMode") ?? false);
+  Rxn<CategoryModel> filterdCategory = Rxn<CategoryModel>();
   TextEditingController categoryNameFieldController = TextEditingController();
   CategoryModel? selectedCategory;
   PaymentModel? selectedPayment;
@@ -39,9 +46,26 @@ class MainPageController extends GetxController {
     todayRecord = await createRecordRequest.getTodayRequest();
     records.value = await readRecordRequest.excuteRequest();
     categories.value = await readCategoryRequest.excuteRequest();
-    todayPayment.value =
+    viewTodayPayment.value =
         await readPaymentRequest.excuteRequest(recordId: todayRecord?.id);
+    todayPayment = viewTodayPayment.value!;
     loading(false);
+    update();
+  }
+
+  void changeThemeMode({required bool isDarkMode}) {
+    this.isDarkMode.value = isDarkMode;
+    update();
+  }
+
+  void filterData({CategoryModel? categoryModel}) {
+    if (categoryModel == null) return;
+    filterdCategory.value = categoryModel;
+    List<PaymentModel> tempList = [];
+    viewTodayPayment.value?.forEach((element) {
+      if (element.category_id == categoryModel.id) tempList.add(element);
+    });
+    viewTodayPayment.value = tempList;
     update();
   }
 
@@ -53,7 +77,7 @@ class MainPageController extends GetxController {
     todayRecord = todayRecord;
     records.value = await readRecordRequest.excuteRequest();
     categories.value = await readCategoryRequest.excuteRequest();
-    todayPayment.value =
+    viewTodayPayment.value =
         await readPaymentRequest.excuteRequest(recordId: todayRecord.id);
     loading(false);
     update();
@@ -61,10 +85,33 @@ class MainPageController extends GetxController {
 
   double getTodayPaymentByCategory({int? categoryId}) {
     double result = 0;
-    todayPayment.value?.forEach((element) {
+    todayPayment.forEach((element) {
       if (element.category_id == categoryId) result += element.price!;
     });
     return result;
+  }
+
+  void deleteCategory({required CategoryModel categoryModel}) {
+    DeleteCategoryRequest deleteCategoryRequest = DeleteCategoryRequest();
+    deleteCategoryRequest.excuteRequest(categoryModel: categoryModel);
+    categories.value?.remove(categoryModel);
+    Get.back();
+    update();
+  }
+
+  void deletePayment({required PaymentModel paymentModel}) {
+    DeletePaymentRequest deletePaymentRequest = DeletePaymentRequest();
+    deletePaymentRequest.excuteRequest(paymentModel: paymentModel);
+    todayPayment.remove(paymentModel);
+    viewTodayPayment.value?.remove(paymentModel);
+    Get.back();
+    update();
+  }
+
+  void resetFilterMounthPage() {
+    viewTodayPayment.value = todayPayment;
+    filterdCategory.value = null;
+    update();
   }
 
   void addCategoryData() async {
@@ -115,7 +162,7 @@ class MainPageController extends GetxController {
     AddPaymentRequest addPaymentRequest = AddPaymentRequest();
     int id = await addPaymentRequest.excuteRequest(paymentModel: paymentModel);
     if (id != 0) paymentModel.id = id;
-    todayPayment.value!.insert(0, paymentModel);
+    viewTodayPayment.value!.insert(0, paymentModel);
     update();
     priceFieldController.text = '';
     noteFieldController.text = '';

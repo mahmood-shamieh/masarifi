@@ -19,12 +19,11 @@ class HomePage extends GetView<MainPageController> {
   @override
   Widget build(BuildContext context) {
     double todayPrice = 0;
-    printInfo(info: "build function called");
     return GetBuilder<MainPageController>(
-      init: controller,
+      init: Get.find<MainPageController>(),
       builder: (controller) {
-        if (controller.todayPayment.value != null) {
-          controller.todayPayment.value!.forEach((element) {
+        if (controller.todayPayment != null) {
+          controller.todayPayment.forEach((element) {
             todayPrice += element.price ?? 0;
           });
         }
@@ -57,7 +56,7 @@ class HomePage extends GetView<MainPageController> {
                   ),
                 ),
 
-          (controller.todayPayment.value?.isNotEmpty ?? true)
+          (controller.todayPayment.isNotEmpty)
               ? SizedBox(
                   // width: MediaQuery.of(context).size.width + 200,
                   height: MediaQuery.of(context).size.height / 2 + 150,
@@ -78,7 +77,10 @@ class HomePage extends GetView<MainPageController> {
                           isVisible: true,
                           alignment: ChartAlignment.center,
                           isResponsive: true,
-                          position: LegendPosition.bottom),
+                          padding: 25,
+                          itemPadding: 20,
+                          overflowMode: LegendItemOverflowMode.wrap,
+                          position: LegendPosition.top),
                       tooltipBehavior: TooltipBehavior(
                         enable: true,
                       ),

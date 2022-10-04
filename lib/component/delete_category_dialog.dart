@@ -1,34 +1,38 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
-import 'package:masarifi/constants.dart';
 import 'package:masarifi/controllers/View_controllers/main_page_controller.dart';
 import 'package:masarifi/models/db_models/category_model.dart';
 
-class EditCategoryDialog extends GetView<MainPageController> {
+import '../constants.dart';
+
+class DeleteCategoryDialog extends GetView<MainPageController> {
   CategoryModel categoryModel;
-  EditCategoryDialog({super.key, required this.categoryModel});
+  DeleteCategoryDialog({super.key, required this.categoryModel});
 
   @override
   Widget build(BuildContext context) {
-    controller.editCategoryFieldController.text = categoryModel.name!;
-    return ListBody(
+    return Column(
       children: [
-        getTextField(
-            hintText: categoryModel.name,
-            textEditingController: controller.editCategoryFieldController,
-            textInputType: TextInputType.streetAddress),
+        RichText(
+          text: TextSpan(
+            text: "هل أنت متأكد ؟؟",
+            style: getTextStyle(
+                size: 20,
+                color: Get.theme.primaryColor,
+                fontWeight: FontWeight.w100),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
           children: [
             ElevatedButton(
               onPressed: () =>
-                  controller.updateCategoryModle(categoryModel: categoryModel),
+                  controller.deleteCategory(categoryModel: categoryModel),
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: "تحديث",
+                  text: "تأكيد",
                   style: getTextStyle(
                       size: 20,
                       color: Get.theme.scaffoldBackgroundColor,
@@ -52,7 +56,7 @@ class EditCategoryDialog extends GetView<MainPageController> {
               ),
             )
           ],
-        ),
+        )
       ],
     );
   }

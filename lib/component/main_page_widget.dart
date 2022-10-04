@@ -10,17 +10,24 @@ import 'package:masarifi/pages/settings_page.dart';
 class MainPageWidget extends GetView<MainPageController> {
   @override
   Widget build(BuildContext context) {
-    switch (controller.currentPage.value) {
-      case Pages.homePage:
-        return HomePage();
-      case Pages.mounthPage:
-        return MounthPage();
-      case Pages.categoriesPage:
-        return CategoriesPage();
-      case Pages.settingsPage:
-        return SettingsPage();
-      default:
-        return HomePage();
+    int getIndex() {
+      switch (controller.currentPage.value) {
+        case Pages.homePage:
+          return 0;
+        case Pages.mounthPage:
+          return 1;
+        case Pages.categoriesPage:
+          return 2;
+        case Pages.settingsPage:
+          return 3;
+        default:
+          return 0;
+      }
     }
+
+    return IndexedStack(
+      children: [HomePage(), MounthPage(), CategoriesPage(), SettingsPage()],
+      index: getIndex(),
+    );
   }
 }

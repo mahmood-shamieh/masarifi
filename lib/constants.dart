@@ -6,7 +6,7 @@ TextDirection direction = TextDirection.rtl;
 
 TextStyle getTextStyle({double? size, Color? color, FontWeight? fontWeight}) {
   return GoogleFonts.elMessiri(
-      color: color, fontWeight: fontWeight, fontSize: size);
+      color: color ?? (Colors.amber), fontWeight: fontWeight, fontSize: size);
 }
 
 Widget getTextField(

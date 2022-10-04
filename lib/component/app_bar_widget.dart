@@ -32,12 +32,20 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: getTextStyle(
               size: 25,
               fontWeight: FontWeight.bold,
-              color: Get.theme.scaffoldBackgroundColor,
+              color: Colors.white,
             ),
           ),
         ),
       ),
       centerTitle: true,
+      // actions: [
+      //   Get.find<MainPageController>().currentPage.value == Pages.mounthPage
+      //       ? IconButton(
+      //           onPressed: () =>
+      //               Get.find<MainPageController>().resetFilterMounthPage(),
+      //           icon: Icon(Icons.sort))
+      //       : Container()
+      // ],
       leading: IconButton(
           onPressed: () => Get.defaultDialog(
               title: "إختر اليوم",
