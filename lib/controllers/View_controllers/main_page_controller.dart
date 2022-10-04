@@ -62,7 +62,7 @@ class MainPageController extends GetxController {
     if (categoryModel == null) return;
     filterdCategory.value = categoryModel;
     List<PaymentModel> tempList = [];
-    viewTodayPayment.value?.forEach((element) {
+    todayPayment.forEach((element) {
       if (element.category_id == categoryModel.id) tempList.add(element);
     });
     viewTodayPayment.value = tempList;
