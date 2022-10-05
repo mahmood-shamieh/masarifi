@@ -84,7 +84,7 @@ class CategoriesPage extends GetView<MainPageController> {
                       text: "لا يوجد بيانات",
                       style: getTextStyle(
                           size: 20,
-                          fontWeight: FontWeight.w300,
+                          fontWeight: FontWeight.bold,
                           color: Get.theme.primaryColor),
                     ),
                   ),

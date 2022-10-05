@@ -8,7 +8,9 @@ import 'package:masarifi/pages.dart';
 
 class SettingsPage extends GetView<MainPageController> {
   getTextValue({required bool isDarkMode}) {
+    print("outer if" + isDarkMode.toString());
     if (controller.isLightkMode.value != null) {
+      print("inner if" + controller.isLightkMode.value!.toString());
       if (controller.isLightkMode.value!) {
         return "تفعيل الوضع المظلم";
       } else {
@@ -47,10 +49,10 @@ class SettingsPage extends GetView<MainPageController> {
                           GetStorage().write("lightMode", true);
                         }
                       } else {
-                        controller.changeThemeMode(isLightMode: !isDarkMode);
+                        controller.changeThemeMode(isLightMode: isDarkMode);
                         Get.changeThemeMode(
                             isDarkMode ? ThemeMode.light : ThemeMode.dark);
-                        GetStorage().write("lightMode", !isDarkMode);
+                        GetStorage().write("lightMode", isDarkMode);
                       }
                     },
                     child: RichText(
