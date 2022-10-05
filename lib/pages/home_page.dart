@@ -22,8 +22,8 @@ class HomePage extends GetView<MainPageController> {
     return GetBuilder<MainPageController>(
       init: Get.find<MainPageController>(),
       builder: (controller) {
-        if (controller.todayPayment != null) {
-          controller.todayPayment.forEach((element) {
+        if (controller.todayPayment.value != null) {
+          controller.todayPayment.value?.forEach((element) {
             todayPrice += element.price ?? 0;
           });
         }
@@ -56,7 +56,7 @@ class HomePage extends GetView<MainPageController> {
                   ),
                 ),
 
-          (controller.todayPayment.isNotEmpty)
+          (controller.todayPayment.value?.isNotEmpty ?? true)
               ? SizedBox(
                   // width: MediaQuery.of(context).size.width + 200,
                   height: MediaQuery.of(context).size.height / 2 + 150,

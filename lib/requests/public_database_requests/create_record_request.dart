@@ -16,7 +16,7 @@ class CreateRecordRequest {
 
   Future<RecordModel> getTodayRequest() async {
     DateTime time = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(time);
+    String formattedDate = DateFormat('yyyy-MM').format(time);
     StringBuffer query = StringBuffer();
     query.write('SELECT * FROM record WHERE date_as_id LIKE');
     query.write('\'');

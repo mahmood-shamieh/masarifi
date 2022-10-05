@@ -19,7 +19,10 @@ class SettingsPage extends GetView<MainPageController> {
                   child: ElevatedButton(
                     onPressed: () {
                       controller.changeThemeMode(
-                          isDarkMode: !controller.isDarkMode.value);
+                          isDarkMode: GetStorage().read("lightMode") ??
+                              (ThemeMode.system == ThemeMode.dark
+                                  ? true
+                                  : false));
                       if (controller.isDarkMode.value) {
                         Get.changeThemeMode(ThemeMode.light);
                         GetStorage().write("lightMode", true);

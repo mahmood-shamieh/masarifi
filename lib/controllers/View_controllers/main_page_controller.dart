@@ -24,13 +24,13 @@ class MainPageController extends GetxController {
   RecordModel? todayRecord;
   Rxn<List<CategoryModel>> categories = Rxn<List<CategoryModel>>();
   Rxn<List<PaymentModel>> viewTodayPayment = Rxn<List<PaymentModel>>();
-  List<PaymentModel> todayPayment = [];
+  Rxn<List<PaymentModel>> todayPayment = Rxn();
   Rx<bool> isDarkMode = Rx<bool>(GetStorage().read<bool>("lightMode") ?? false);
   Rxn<CategoryModel> filterdCategory = Rxn<CategoryModel>();
-  TextEditingController categoryNameFieldController = TextEditingController();
-  CategoryModel? selectedCategory;
-  PaymentModel? selectedPayment;
+  Rxn<CategoryModel?> selectedCategory = Rxn();
+  Rxn<PaymentModel?> selectedPayment = Rxn();
   Rxn<List<RecordModel>> records = Rxn<List<RecordModel>>();
+  TextEditingController categoryNameFieldController = TextEditingController();
   TextEditingController priceFieldController = TextEditingController();
   TextEditingController noteFieldController = TextEditingController();
   TextEditingController editPriceFieldController = TextEditingController();
@@ -48,7 +48,7 @@ class MainPageController extends GetxController {
     categories.value = await readCategoryRequest.excuteRequest();
     viewTodayPayment.value =
         await readPaymentRequest.excuteRequest(recordId: todayRecord?.id);
-    todayPayment = viewTodayPayment.value!;
+    todayPayment.value = viewTodayPayment.value!;
     loading(false);
     update();
   }
@@ -62,7 +62,7 @@ class MainPageController extends GetxController {
     if (categoryModel == null) return;
     filterdCategory.value = categoryModel;
     List<PaymentModel> tempList = [];
-    todayPayment.forEach((element) {
+    todayPayment.value?.forEach((element) {
       if (element.category_id == categoryModel.id) tempList.add(element);
     });
     viewTodayPayment.value = tempList;
@@ -71,21 +71,21 @@ class MainPageController extends GetxController {
 
   void updateAllData({required RecordModel todayRecord}) async {
     loading(true);
-    ReadRecordRequest readRecordRequest = ReadRecordRequest();
-    ReadCategoryRequest readCategoryRequest = ReadCategoryRequest();
+    // ReadRecordRequest readRecordRequest = ReadRecordRequest();
     ReadPaymentRequest readPaymentRequest = ReadPaymentRequest();
-    todayRecord = todayRecord;
-    records.value = await readRecordRequest.excuteRequest();
-    categories.value = await readCategoryRequest.excuteRequest();
-    viewTodayPayment.value =
+    this.todayRecord = todayRecord;
+    // records.value = await readRecordRequest.excuteRequest();
+    todayPayment.value =
         await readPaymentRequest.excuteRequest(recordId: todayRecord.id);
+    viewTodayPayment.value = todayPayment.value;
+    resetFilterMounthPage();
     loading(false);
     update();
   }
 
   double getTodayPaymentByCategory({int? categoryId}) {
     double result = 0;
-    todayPayment.forEach((element) {
+    todayPayment.value?.forEach((element) {
       if (element.category_id == categoryId) result += element.price!;
     });
     return result;
@@ -102,14 +102,14 @@ class MainPageController extends GetxController {
   void deletePayment({required PaymentModel paymentModel}) {
     DeletePaymentRequest deletePaymentRequest = DeletePaymentRequest();
     deletePaymentRequest.excuteRequest(paymentModel: paymentModel);
-    todayPayment.remove(paymentModel);
+    todayPayment.value?.remove(paymentModel);
     viewTodayPayment.value?.remove(paymentModel);
     Get.back();
     update();
   }
 
   void resetFilterMounthPage() {
-    viewTodayPayment.value = todayPayment;
+    viewTodayPayment.value = todayPayment.value;
     filterdCategory.value = null;
     update();
   }
@@ -131,7 +131,8 @@ class MainPageController extends GetxController {
   }
 
   void choseSelectedCategory({CategoryModel? categoryModel}) {
-    selectedCategory = categoryModel;
+    selectedCategory.value = categoryModel;
+    update();
   }
 
   void updateCategoryModle({required CategoryModel categoryModel}) {
@@ -145,7 +146,8 @@ class MainPageController extends GetxController {
     UpdatePaymentRequest updatePaymentRequest = UpdatePaymentRequest();
     paymentModel.price = double.tryParse(editPriceFieldController.text);
     paymentModel.note = editNoteFieldController.text;
-    paymentModel.category_id = selectedCategory?.id ?? paymentModel.category_id;
+    paymentModel.category_id =
+        selectedCategory.value?.id ?? paymentModel.category_id;
     updatePaymentRequest.excuteRequest(paymentModel: paymentModel);
     update();
     Get.back();
@@ -154,7 +156,7 @@ class MainPageController extends GetxController {
   void addPaymentData() async {
     PaymentModel paymentModel = PaymentModel(
         id: null,
-        category_id: selectedCategory?.id,
+        category_id: selectedCategory.value?.id,
         note: noteFieldController.text,
         record_id: todayRecord?.id,
         price: double.tryParse(priceFieldController.text),
