@@ -25,7 +25,7 @@ void main() async {
   createCategoryRequest.inialRequest();
   createPaymentRequest.inialRequest();
   Get.put<MainPageController>(MainPageController());
-
+  // GetStorage().erase();
   runApp(MyApp());
 }
 

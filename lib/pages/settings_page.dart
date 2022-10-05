@@ -7,8 +7,26 @@ import 'package:masarifi/controllers/View_controllers/main_page_controller.dart'
 import 'package:masarifi/pages.dart';
 
 class SettingsPage extends GetView<MainPageController> {
+  getTextValue({required bool isDarkMode}) {
+    if (controller.isLightkMode.value != null) {
+      if (controller.isLightkMode.value!) {
+        return "تفعيل الوضع المظلم";
+      } else {
+        return "تفعيل الوضع المضيء";
+      }
+    } else {
+      if (isDarkMode) {
+        return "تفعيل الوضع المضيء";
+      } else {
+        return "تفعيل الوضع المظلم";
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return GetBuilder<MainPageController>(
         init: Get.find<MainPageController>(),
         builder: (controller) => ListBody(
@@ -18,24 +36,26 @@ class SettingsPage extends GetView<MainPageController> {
                   padding: const EdgeInsets.all(12),
                   child: ElevatedButton(
                     onPressed: () {
-                      controller.changeThemeMode(
-                          isDarkMode: GetStorage().read("lightMode") ??
-                              (ThemeMode.system == ThemeMode.dark
-                                  ? true
-                                  : false));
-                      if (controller.isDarkMode.value) {
-                        Get.changeThemeMode(ThemeMode.light);
-                        GetStorage().write("lightMode", true);
+                      if (controller.isLightkMode.value != null) {
+                        if (controller.isLightkMode.value!) {
+                          controller.changeThemeMode(isLightMode: false);
+                          Get.changeThemeMode(ThemeMode.dark);
+                          GetStorage().write("lightMode", false);
+                        } else {
+                          controller.changeThemeMode(isLightMode: true);
+                          Get.changeThemeMode(ThemeMode.light);
+                          GetStorage().write("lightMode", true);
+                        }
                       } else {
-                        Get.changeThemeMode(ThemeMode.dark);
-                        GetStorage().write("lightMode", false);
+                        controller.changeThemeMode(isLightMode: !isDarkMode);
+                        Get.changeThemeMode(
+                            isDarkMode ? ThemeMode.light : ThemeMode.dark);
+                        GetStorage().write("lightMode", !isDarkMode);
                       }
                     },
                     child: RichText(
                       text: TextSpan(
-                        text: controller.isDarkMode.value
-                            ? "تفعيل الوضع المظلم"
-                            : "تفعيل الوضع المضيء",
+                        text: getTextValue(isDarkMode: isDarkMode),
                         style: getTextStyle(
                           color: Colors.white,
                           size: 20,

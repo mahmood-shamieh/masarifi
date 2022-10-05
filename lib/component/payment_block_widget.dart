@@ -74,7 +74,7 @@ class PaymentBlockWidget extends GetView<MainPageController> {
           ),
           title: RichText(
             text: TextSpan(
-              text: paymentModel.price.toString(),
+              text: paymentModel.price?.toInt().toString(),
               style: getTextStyle(
                 size: 20,
                 color: Get.theme.primaryColor,

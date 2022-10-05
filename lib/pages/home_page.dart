@@ -48,7 +48,7 @@ class HomePage extends GetView<MainPageController> {
               : RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    text: todayPrice.toString(),
+                    text: todayPrice.toInt().toString(),
                     style: getTextStyle(
                         size: 40,
                         color: Get.theme.primaryColor,
@@ -90,8 +90,10 @@ class HomePage extends GetView<MainPageController> {
                           xValueMapper: (CategoryModel categoryModel, _) =>
                               categoryModel.name,
                           yValueMapper: (CategoryModel categoryModel, _) =>
-                              controller.getTodayPaymentByCategory(
-                                  categoryId: categoryModel.id),
+                              controller
+                                  .getTodayPaymentByCategory(
+                                      categoryId: categoryModel.id)
+                                  .toInt(),
                           name: 'الشرح',
                           dataLabelSettings: DataLabelSettings(
                             isVisible: true,

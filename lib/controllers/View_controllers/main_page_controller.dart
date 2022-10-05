@@ -25,7 +25,7 @@ class MainPageController extends GetxController {
   Rxn<List<CategoryModel>> categories = Rxn<List<CategoryModel>>();
   Rxn<List<PaymentModel>> viewTodayPayment = Rxn<List<PaymentModel>>();
   Rxn<List<PaymentModel>> todayPayment = Rxn();
-  Rx<bool> isDarkMode = Rx<bool>(GetStorage().read<bool>("lightMode") ?? false);
+  Rxn<bool> isLightkMode = Rxn<bool>();
   Rxn<CategoryModel> filterdCategory = Rxn<CategoryModel>();
   Rxn<CategoryModel?> selectedCategory = Rxn();
   Rxn<PaymentModel?> selectedPayment = Rxn();
@@ -36,8 +36,20 @@ class MainPageController extends GetxController {
   TextEditingController editPriceFieldController = TextEditingController();
   TextEditingController editNoteFieldController = TextEditingController();
   TextEditingController editCategoryFieldController = TextEditingController();
+  bool? detectThemeMode() {
+    bool? isLightMode = GetStorage().read<bool>("lightMode");
+    if (isLightMode == null) {
+      return null;
+    } else if (isLightMode) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   void onInit() async {
+    isLightkMode.value = detectThemeMode();
     loading(true);
     CreateRecordRequest createRecordRequest = CreateRecordRequest();
     ReadRecordRequest readRecordRequest = ReadRecordRequest();
@@ -53,8 +65,8 @@ class MainPageController extends GetxController {
     update();
   }
 
-  void changeThemeMode({required bool isDarkMode}) {
-    this.isDarkMode.value = isDarkMode;
+  void changeThemeMode({bool? isLightMode}) {
+    this.isLightkMode.value = isLightMode;
     update();
   }
 
